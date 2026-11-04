@@ -125,7 +125,7 @@
       <span class="badge">两人份</span>
     </div>
 
-    <button class="btn-generate" id="randomBtn">🎲 随机生成一天菜谱</button>
+    <button class="btn-generate" id="randomBtn">🎲 随机生成明天菜谱</button>
 
     <div id="menuDisplay">
       <div class="empty-message">
@@ -139,14 +139,18 @@
   </div>
 
   <script>
-    // 计算明天是星期几
-   function getTomorrowDayName() {
-     const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-     const tomorrow = new Date();
-     tomorrow.setDate(tomorrow.getDate() + 1); // 加一天
-     return weekdays[tomorrow.getDay()];
+    // ========== 计算"明天"的完整日期 + 星期 ==========
+    function getTomorrowInfo() {
+      const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const month = tomorrow.getMonth() + 1;
+      const day = tomorrow.getDate();
+      const weekday = weekdays[tomorrow.getDay()];
+      return `${month}月${day}日 ${weekday}`;
     }
-    
+
+    // ========== 菜谱数据（dayName 只保留风格名，不再含星期） ==========
     const recipePool = [
       {
         dayName: "温和滋养",
@@ -273,9 +277,11 @@
       const recipe = recipePool[index];
       if (!recipe) return;
 
+      const tomorrowInfo = getTomorrowInfo(); // 例："11月5日 星期三"
+
       const mealsHTML = `
         <div class="menu-wrapper">
-         <div class="day-header">📅 ${getTomorrowDayName()} · ${recipe.dayName} · 孕期双人餐</div>
+          <div class="day-header">📅 ${tomorrowInfo} · ${recipe.dayName} · 孕期双人餐</div>
           <div class="meals-grid">
             <div class="meal-card">
               <div class="meal-title">🌅 早餐</div>
@@ -331,7 +337,7 @@
       renderMenu(idx);
     });
 
-    // 注册 Service Worker（可选，用于离线缓存）
+    // Service Worker 注册（可选离线）
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').catch(() => {});

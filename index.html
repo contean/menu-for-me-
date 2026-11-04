@@ -141,7 +141,7 @@
   <script>
     const recipePool = [
       {
-        dayName: "星期一 · 温和滋养",
+        dayName: "温和滋养",
         breakfast: ["菠菜鸡蛋全麦卷", "红枣小米粥"],
         lunch: ["清蒸鲈鱼", "蒜蓉西兰花", "杂粮饭"],
         dinner: ["番茄炖牛腩", "凉拌黄瓜", "紫薯馒头"],
@@ -158,7 +158,7 @@
         ]
       },
       {
-        dayName: "星期二 · 补铁高蛋白",
+        dayName: "补铁高蛋白",
         breakfast: ["牛肉沫蒸蛋", "燕麦牛奶粥", "猕猴桃"],
         lunch: ["彩椒炒鸡胸肉", "芝麻拌菠菜", "藜麦饭"],
         dinner: ["豆腐鲫鱼汤", "清炒芦笋", "南瓜发糕"],
@@ -175,7 +175,7 @@
         ]
       },
       {
-        dayName: "星期三 · 鲜蔬补钙",
+        dayName: "鲜蔬补钙",
         breakfast: ["虾仁蔬菜粥", "水煮蛋", "橙子"],
         lunch: ["红烧带鱼", "木耳炒山药", "黑米饭"],
         dinner: ["香菇鸡肉焖饭", "白灼菜心", "番茄蛋花汤"],
@@ -191,7 +191,7 @@
         ]
       },
       {
-        dayName: "星期四 · 膳食纤维日",
+        dayName: "膳食纤维日",
         breakfast: ["紫薯燕麦糊", "蔬菜鸡蛋饼", "圣女果"],
         lunch: ["西芹炒牛肉", "凉拌海带丝", "红豆饭"],
         dinner: ["清蒸鳕鱼", "蒜蓉空心菜", "玉米面窝头"],
@@ -208,7 +208,7 @@
         ]
       },
       {
-        dayName: "星期五 · 优质脂肪搭配",
+        dayName: "优质脂肪搭配",
         breakfast: ["牛油果鸡蛋全麦吐司", "牛奶", "草莓"],
         lunch: ["照烧鸡腿肉", "清炒莴笋", "糙米饭"],
         dinner: ["白萝卜排骨汤", "豆角焖面", "凉拌豆腐丝"],
@@ -224,7 +224,7 @@
         ]
       },
       {
-        dayName: "星期六 · 暖胃易消化",
+        dayName: "暖胃易消化",
         breakfast: ["山药瘦肉粥", "水煮蛋", "葡萄"],
         lunch: ["番茄龙利鱼", "清炒娃娃菜", "小米饭"],
         dinner: ["莲藕花生炖猪蹄", "蒜蓉秋葵", "小花卷"],
@@ -240,7 +240,7 @@
         ]
       },
       {
-        dayName: "星期日 · 缤纷营养",
+        dayName: "缤纷营养",
         breakfast: ["南瓜牛奶羹", "蔬菜三明治", "小番茄"],
         lunch: ["芦笋炒虾仁", "彩椒炒鸡蛋", "二米饭"],
         dinner: ["冬瓜丸子汤", "芹菜炒香干", "蒸红薯"],
@@ -267,7 +267,7 @@
 
       const mealsHTML = `
         <div class="menu-wrapper">
-          <div class="day-header">📅 ${recipe.dayName} · 孕期双人餐</div>
+         <div class="day-header">📅 ${getTomorrowDayName()} · ${recipe.dayName} · 孕期双人餐</div>
           <div class="meals-grid">
             <div class="meal-card">
               <div class="meal-title">🌅 早餐</div>

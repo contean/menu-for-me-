@@ -139,6 +139,13 @@
   </div>
 
   <script>
+    // 计算明天是星期几
+  function getTomorrowDayName() {
+    const weekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1); // 加一天
+    return weekdays[tomorrow.getDay()];
+  }
     const recipePool = [
       {
         dayName: "温和滋养",

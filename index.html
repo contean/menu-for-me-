@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="孕期菜谱">
+  <meta name="theme-color" content="#fbf7f0">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>孕期双人菜谱</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    :root {
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+      background: #fbf7f0;
+      color: #3e2e1f;
+      min-height: 100vh;
+      padding: calc(20px + var(--safe-top)) 16px calc(24px + var(--safe-bottom));
+      -webkit-text-size-adjust: 100%;
+    }
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      background: #fffcf8;
+      border-radius: 22px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+      padding: 22px 18px 26px;
+      border: 1px solid #f0e3d5;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px dashed #e5d6c6;
+      padding-bottom: 14px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .title { font-size: 24px; font-weight: 600; color: #7a5a3e; letter-spacing: -0.5px; }
+    .badge {
+      background: #efe2d3; font-size: 13px; padding: 3px 10px;
+      border-radius: 20px; color: #6b4f36;
+    }
+    .btn-generate {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%;
+      background: #d9b99b; border: none; color: #2d241c;
+      font-weight: 600; font-size: 17px;
+      padding: 15px 20px; border-radius: 16px;
+      box-shadow: 0 4px 0 #b28b6f;
+      margin-bottom: 22px;
+      transition: transform 0.08s;
+      font-family: inherit;
+    }
+    .btn-generate:active { transform: translateY(3px); box-shadow: 0 1px 0 #b28b6f; }
+    .empty-message {
+      text-align: center; color: #b29a84; font-size: 15px;
+      padding: 48px 18px; background: #fbf5ee;
+      border-radius: 18px; border: 1px dashed #dac9b8; line-height: 1.6;
+    }
+    .menu-wrapper { display: flex; flex-direction: column; gap: 18px; }
+    .day-header {
+      background: #f5ede4; border-radius: 30px; padding: 12px 18px;
+      font-size: 15px; font-weight: 500; color: #5a3f2b;
+      border: 1px solid #e1cebb;
+    }
+    .meals-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 360px) { .meals-grid { grid-template-columns: 1fr; } }
+    .meal-card {
+      background: #fefcf9; border-radius: 16px; padding: 14px;
+      border: 1px solid #eedbcb;
+    }
+    .meal-title {
+      font-size: 16px; font-weight: 600; color: #8b6b4b;
+      margin-bottom: 10px; border-left: 4px solid #d9b99b; padding-left: 8px;
+    }
+    .dish-list { display: flex; flex-direction: column; gap: 6px; }
+    .dish-item {
+      font-size: 14px; padding: 4px 0; color: #3e2e1f;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px dotted #f0dfce; gap: 6px;
+    }
+    .dish-item:last-child { border-bottom: none; }
+    .portion {
+      color: #a9876a; font-size: 11px; background: #f8f0e8;
+      padding: 2px 8px; border-radius: 20px; flex-shrink: 0;
+    }
+    .shopping-section, .steps-section {
+      background: #f8f2ea; border-radius: 18px; padding: 16px 16px 18px;
+      border: 1px solid #eadaca;
+    }
+    .steps-section { background: #faf5ef; }
+    .section-title {
+      font-size: 17px; font-weight: 600; color: #6c4f36;
+      margin-bottom: 12px; border-bottom: 1px solid #e2cfbd; padding-bottom: 8px;
+    }
+    .shopping-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .shopping-item {
+      background: #fffbf7; padding: 6px 12px; border-radius: 20px;
+      border: 1px solid #e7d6c4; font-size: 13px;
+    }
+    .steps-container { display: flex; flex-direction: column; gap: 14px; }
+    .step-item {
+      background: #fffdfa; border-radius: 12px; padding: 12px 14px;
+      border-left: 4px solid #d9b99b;
+    }
+    .step-dish { font-weight: 600; font-size: 15px; color: #795f46; margin-bottom: 6px; }
+    .step-method { font-size: 13px; line-height: 1.65; color: #3f3227; white-space: pre-line; }
+    .footer-note {
+      margin-top: 22px; font-size: 11px; color: #b6a18e;
+      text-align: center; border-top: 1px solid #f0e2d3; padding-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <span class="title">🍲 孕期双人餐盘</span>
+      <span class="badge">两人份</span>
+    </div>
+
+    <button class="btn-generate" id="randomBtn">🎲 随机生成一天菜谱</button>
+
+    <div id="menuDisplay">
+      <div class="empty-message">
+        👩‍🍳 点击按钮，为两位准妈妈/准爸爸生成营养均衡的孕期一日三餐+加餐
+      </div>
+    </div>
+
+    <div class="footer-note">
+      ⚕️ 菜谱仅供参考，请根据个人体质和医生建议调整食材。
+    </div>
+  </div>
+
+  <script>
+    const recipePool = [
+      {
+        dayName: "星期一 · 温和滋养",
+        breakfast: ["菠菜鸡蛋全麦卷", "红枣小米粥"],
+        lunch: ["清蒸鲈鱼", "蒜蓉西兰花", "杂粮饭"],
+        dinner: ["番茄炖牛腩", "凉拌黄瓜", "紫薯馒头"],
+        snack: ["酸奶", "核桃仁", "蓝莓"],
+        shopping: ["菠菜200g","鸡蛋4个","全麦卷饼4张","小米80g","红枣8颗","鲈鱼1条(约500g)","西兰花1颗","大蒜1头","杂粮米150g","牛腩400g","番茄3个","黄瓜2根","紫薯馒头4个","无糖酸奶2杯","核桃仁30g","蓝莓1盒(125g)"],
+        steps: [
+          { dish: "菠菜鸡蛋全麦卷", method: "1. 菠菜焯水挤干切碎；2. 鸡蛋打散炒熟，与菠菜混合，加少许盐；3. 全麦卷饼小火加热，铺上菠菜鸡蛋，卷紧即可。" },
+          { dish: "红枣小米粥", method: "1. 小米洗净，红枣去核；2. 锅中加水烧开，放入小米和红枣，小火煮25分钟至粘稠。" },
+          { dish: "清蒸鲈鱼", method: "1. 鲈鱼处理干净，两面划刀，抹少许盐，放姜片；2. 水开后蒸8-10分钟；3. 出锅淋少许蒸鱼豉油，撒葱花，浇热油。" },
+          { dish: "蒜蓉西兰花", method: "1. 西兰花掰小朵，焯水1分钟；2. 蒜切末，锅中少油爆香蒜末；3. 倒入西兰花快速翻炒，加盐调味。" },
+          { dish: "番茄炖牛腩", method: "1. 牛腩切块焯水；2. 番茄切块，锅中少油炒软番茄，加入牛腩翻炒；3. 加开水没过食材，小火炖1.5小时，加盐调味。" },
+          { dish: "凉拌黄瓜", method: "1. 黄瓜拍碎切段；2. 加少许蒜末、醋、生抽、香油拌匀。" },
+          { dish: "杂粮饭 & 紫薯馒头", method: "杂粮米提前浸泡30分钟，按正常煮饭；紫薯馒头蒸热即可。" }
+        ]
+      },
+      {
+        dayName: "星期二 · 补铁高蛋白",
+        breakfast: ["牛肉沫蒸蛋", "燕麦牛奶粥", "猕猴桃"],
+        lunch: ["彩椒炒鸡胸肉", "芝麻拌菠菜", "藜麦饭"],
+        dinner: ["豆腐鲫鱼汤", "清炒芦笋", "南瓜发糕"],
+        snack: ["无糖豆浆", "巴旦木", "香蕉"],
+        shopping: ["牛肉末100g","鸡蛋3个","燕麦片60g","牛奶400ml","猕猴桃2个","鸡胸肉300g","彩椒(红黄)2个","菠菜250g","熟芝麻15g","藜麦100g","鲫鱼1条(约400g)","嫩豆腐1盒","芦笋200g","南瓜发糕4块","无糖豆浆500ml","巴旦木30g","香蕉2根"],
+        steps: [
+          { dish: "牛肉沫蒸蛋", method: "1. 牛肉末加少许生抽、淀粉拌匀；2. 鸡蛋打散加温水(1:1.5)搅匀，过滤；3. 蛋液倒入碗中，撒牛肉末，盖保鲜膜蒸12分钟，焖2分钟。" },
+          { dish: "燕麦牛奶粥", method: "1. 燕麦片加牛奶小火煮3分钟至浓稠，关火焖2分钟。" },
+          { dish: "彩椒炒鸡胸肉", method: "1. 鸡胸肉切片，用少许淀粉、料酒腌10分钟；2. 彩椒切块；3. 热锅少油，炒鸡胸肉至变色，加入彩椒翻炒，加盐调味。" },
+          { dish: "芝麻拌菠菜", method: "1. 菠菜焯水后挤干水分；2. 加少许盐、香油、熟芝麻拌匀。" },
+          { dish: "豆腐鲫鱼汤", method: "1. 鲫鱼煎至两面微黄；2. 加开水、姜片大火煮10分钟至汤色奶白；3. 加入豆腐块再煮5分钟，加盐调味。" },
+          { dish: "清炒芦笋", method: "1. 芦笋去老根切段；2. 锅中少油，清炒芦笋，加少许盐和蒜末。" },
+          { dish: "藜麦饭 & 南瓜发糕", method: "藜麦洗净后与大米1:1混合煮饭；南瓜发糕蒸热。" }
+        ]
+      },
+      {
+        dayName: "星期三 · 鲜蔬补钙",
+        breakfast: ["虾仁蔬菜粥", "水煮蛋", "橙子"],
+        lunch: ["红烧带鱼", "木耳炒山药", "黑米饭"],
+        dinner: ["香菇鸡肉焖饭", "白灼菜心", "番茄蛋花汤"],
+        snack: ["奶酪棒", "腰果", "苹果"],
+        shopping: ["鲜虾仁100g","大米80g","青菜50g","鸡蛋4个","橙子2个","带鱼400g","干木耳10g","山药200g","黑米80g","大米70g","鸡腿肉300g","干香菇6朵","胡萝卜半根","菜心250g","番茄2个","奶酪棒2根","腰果30g","苹果2个"],
+        steps: [
+          { dish: "虾仁蔬菜粥", method: "1. 大米洗净加水煮成粥；2. 虾仁切丁，青菜切碎；3. 粥快好时加入虾仁和青菜煮3分钟，加少许盐。" },
+          { dish: "红烧带鱼", method: "1. 带鱼处理干净切段，用厨房纸吸干水分；2. 锅中少油煎至两面金黄；3. 加姜蒜、生抽、少许老抽、糖和水，小火焖8分钟收汁。" },
+          { dish: "木耳炒山药", method: "1. 木耳泡发撕小朵，山药去皮切片；2. 锅中少油，先炒山药，再下木耳翻炒，加盐和少许蚝油。" },
+          { dish: "香菇鸡肉焖饭", method: "1. 鸡腿肉切块，香菇泡发切丝，胡萝卜切丁；2. 锅中少油炒鸡肉变色，加香菇胡萝卜翻炒，加生抽调味；3. 与洗净的大米一起放入电饭锅，加正常水量焖熟。" },
+          { dish: "白灼菜心", method: "1. 菜心洗净，水开后加少许盐和油，焯烫1分钟捞出；2. 淋少许生抽和香油。" },
+          { dish: "番茄蛋花汤", method: "1. 番茄切块炒软，加开水煮3分钟；2. 淋入蛋液，加盐和香油。" }
+        ]
+      },
+      {
+        dayName: "星期四 · 膳食纤维日",
+        breakfast: ["紫薯燕麦糊", "蔬菜鸡蛋饼", "圣女果"],
+        lunch: ["西芹炒牛肉", "凉拌海带丝", "红豆饭"],
+        dinner: ["清蒸鳕鱼", "蒜蓉空心菜", "玉米面窝头"],
+        snack: ["无糖酸奶", "南瓜籽", "梨"],
+        shopping: ["紫薯1个","燕麦片40g","鸡蛋3个","面粉50g","胡萝卜半根","小葱2根","圣女果10颗","西芹200g","牛里脊250g","海带丝150g","红豆30g","大米120g","鳕鱼300g","空心菜300g","大蒜1头","玉米面窝头4个","无糖酸奶2杯","南瓜籽25g","梨2个"],
+        steps: [
+          { dish: "紫薯燕麦糊", method: "1. 紫薯蒸熟压泥；2. 燕麦片加水煮软，加入紫薯泥拌匀，可加少许牛奶。" },
+          { dish: "蔬菜鸡蛋饼", method: "1. 胡萝卜切丝、小葱切碎，与鸡蛋、面粉、少许水调成糊；2. 平底锅少油，倒入面糊摊平，两面煎熟。" },
+          { dish: "西芹炒牛肉", method: "1. 牛肉切丝用生抽、淀粉腌10分钟；2. 西芹斜切段焯水30秒；3. 热锅少油炒牛肉至变色，加入西芹快速翻炒，加盐。" },
+          { dish: "凉拌海带丝", method: "1. 海带丝洗净焯水2分钟；2. 加蒜末、醋、少许生抽、香油拌匀。" },
+          { dish: "清蒸鳕鱼", method: "1. 鳕鱼解冻后吸干水分，抹少许盐，放姜片；2. 水开后蒸6-8分钟；3. 出锅淋少许蒸鱼豉油，撒葱花。" },
+          { dish: "蒜蓉空心菜", method: "1. 空心菜洗净切段；2. 蒜切末爆香，下空心菜大火快炒，加盐。" },
+          { dish: "红豆饭 & 玉米窝头", method: "红豆提前浸泡2小时，与大米同煮成饭；窝头蒸热。" }
+        ]
+      },
+      {
+        dayName: "星期五 · 优质脂肪搭配",
+        breakfast: ["牛油果鸡蛋全麦吐司", "牛奶", "草莓"],
+        lunch: ["照烧鸡腿肉", "清炒莴笋", "糙米饭"],
+        dinner: ["白萝卜排骨汤", "豆角焖面", "凉拌豆腐丝"],
+        snack: ["黑芝麻糊", "夏威夷果", "橙子"],
+        shopping: ["牛油果1个","鸡蛋2个","全麦吐司4片","牛奶400ml","草莓200g","去骨鸡腿肉300g","莴笋1根","糙米120g","排骨300g","白萝卜半根","豆角200g","鲜面条200g","豆腐丝100g","黑芝麻糊粉60g","夏威夷果30g","橙子2个"],
+        steps: [
+          { dish: "牛油果鸡蛋全麦吐司", method: "1. 鸡蛋煮熟切片；2. 牛油果压泥，加少许盐和黑胡椒；3. 吐司烤热，抹牛油果泥，铺鸡蛋片。" },
+          { dish: "照烧鸡腿肉", method: "1. 鸡腿肉用刀背拍松，加少许盐和料酒腌10分钟；2. 平底锅少油，鸡皮朝下煎至金黄，翻面煎熟；3. 加照烧汁(生抽、蜂蜜、水)收汁。" },
+          { dish: "清炒莴笋", method: "1. 莴笋去皮切片；2. 锅中少油，清炒莴笋，加少许盐。" },
+          { dish: "白萝卜排骨汤", method: "1. 排骨焯水；2. 排骨加姜片和水炖40分钟；3. 加入白萝卜块再炖20分钟，加盐。" },
+          { dish: "豆角焖面", method: "1. 豆角切段，锅中少油炒豆角至变色，加生抽和水烧开；2. 铺上面条，盖盖小火焖8分钟，拌匀。" },
+          { dish: "凉拌豆腐丝", method: "1. 豆腐丝焯水1分钟；2. 加黄瓜丝(可省)、醋、少许生抽、香油拌匀。" }
+        ]
+      },
+      {
+        dayName: "星期六 · 暖胃易消化",
+        breakfast: ["山药瘦肉粥", "水煮蛋", "葡萄"],
+        lunch: ["番茄龙利鱼", "清炒娃娃菜", "小米饭"],
+        dinner: ["莲藕花生炖猪蹄", "蒜蓉秋葵", "小花卷"],
+        snack: ["热牛奶", "栗子仁", "蓝莓"],
+        shopping: ["山药150g","瘦肉末80g","大米80g","鸡蛋2个","葡萄200g","龙利鱼柳300g","番茄3个","娃娃菜1颗","小米100g","猪蹄半只","莲藕1节","花生30g","秋葵200g","小花卷4个","牛奶400ml","栗子仁50g","蓝莓1盒"],
+        steps: [
+          { dish: "山药瘦肉粥", method: "1. 山药去皮切小块，瘦肉末加少许淀粉；2. 大米加水煮开，加入山药煮15分钟；3. 加入肉末煮5分钟，加盐。" },
+          { dish: "番茄龙利鱼", method: "1. 龙利鱼切块，用少许盐和淀粉抓匀；2. 番茄切块炒出汁，加开水煮开；3. 下鱼块煮3分钟，加盐调味。" },
+          { dish: "清炒娃娃菜", method: "1. 娃娃菜洗净切段；2. 锅中少油，清炒娃娃菜，加少许盐。" },
+          { dish: "莲藕花生炖猪蹄", method: "1. 猪蹄焯水；2. 莲藕切块，与猪蹄、花生、姜片一起放入锅中，加水炖1.5小时，加盐。" },
+          { dish: "蒜蓉秋葵", method: "1. 秋葵焯水2分钟捞出；2. 蒜末爆香，淋在秋葵上，加少许生抽。" },
+          { dish: "小米饭 & 小花卷", method: "小米与大米1:1煮饭；花卷蒸热。" }
+        ]
+      },
+      {
+        dayName: "星期日 · 缤纷营养",
+        breakfast: ["南瓜牛奶羹", "蔬菜三明治", "小番茄"],
+        lunch: ["芦笋炒虾仁", "彩椒炒鸡蛋", "二米饭"],
+        dinner: ["冬瓜丸子汤", "芹菜炒香干", "蒸红薯"],
+        snack: ["酸奶", "杏仁", "苹果"],
+        shopping: ["南瓜200g","牛奶300ml","全麦面包4片","生菜4片","鸡蛋2个","小番茄10颗","芦笋150g","虾仁200g","彩椒2个","鸡蛋3个","大米+小米150g","冬瓜200g","猪肉末200g","芹菜200g","香干150g","红薯2个","酸奶2杯","杏仁30g","苹果2个"],
+        steps: [
+          { dish: "南瓜牛奶羹", method: "1. 南瓜蒸熟压泥；2. 加入牛奶小火煮2分钟，拌匀即可。" },
+          { dish: "蔬菜三明治", method: "1. 鸡蛋煎熟，生菜洗净；2. 全麦面包烤热，夹入生菜和鸡蛋，可抹少许沙拉酱。" },
+          { dish: "芦笋炒虾仁", method: "1. 芦笋斜切段焯水30秒；2. 虾仁用少许料酒腌5分钟；3. 锅中少油炒虾仁变色，加入芦笋翻炒，加盐。" },
+          { dish: "彩椒炒鸡蛋", method: "1. 彩椒切块，鸡蛋打散；2. 锅中少油先炒鸡蛋盛出，再炒彩椒，最后混合加盐。" },
+          { dish: "冬瓜丸子汤", method: "1. 猪肉末加姜末、淀粉、少许盐搅匀；2. 冬瓜切片，水开后下丸子煮至浮起，加入冬瓜煮5分钟，加盐和香油。" },
+          { dish: "芹菜炒香干", method: "1. 芹菜切段，香干切条；2. 锅中少油，先炒芹菜，再下香干，加少许生抽和盐。" },
+          { dish: "蒸红薯 & 二米饭", method: "红薯去皮切块蒸20分钟；大米小米混合煮饭。" }
+        ]
+      }
+    ];
+
+    const menuDisplay = document.getElementById('menuDisplay');
+    const randomBtn = document.getElementById('randomBtn');
+
+    function renderMenu(index) {
+      const recipe = recipePool[index];
+      if (!recipe) return;
+
+      const mealsHTML = `
+        <div class="menu-wrapper">
+          <div class="day-header">📅 ${recipe.dayName} · 孕期双人餐</div>
+          <div class="meals-grid">
+            <div class="meal-card">
+              <div class="meal-title">🌅 早餐</div>
+              <div class="dish-list">
+                ${recipe.breakfast.map(d => `<div class="dish-item"><span>${d}</span><span class="portion">两人份</span></div>`).join('')}
+              </div>
+            </div>
+            <div class="meal-card">
+              <div class="meal-title">☀️ 午餐</div>
+              <div class="dish-list">
+                ${recipe.lunch.map(d => `<div class="dish-item"><span>${d}</span><span class="portion">两人份</span></div>`).join('')}
+              </div>
+            </div>
+            <div class="meal-card">
+              <div class="meal-title">🌙 晚餐</div>
+              <div class="dish-list">
+                ${recipe.dinner.map(d => `<div class="dish-item"><span>${d}</span><span class="portion">两人份</span></div>`).join('')}
+              </div>
+            </div>
+            <div class="meal-card">
+              <div class="meal-title">🍎 加餐</div>
+              <div class="dish-list">
+                ${recipe.snack.map(d => `<div class="dish-item"><span>${d}</span><span class="portion">两人份</span></div>`).join('')}
+              </div>
+            </div>
+          </div>
+
+          <div class="shopping-section">
+            <div class="section-title">🛍️ 采购清单 · 两人份</div>
+            <div class="shopping-grid">
+              ${recipe.shopping.map(item => `<div class="shopping-item">${item}</div>`).join('')}
+            </div>
+          </div>
+
+          <div class="steps-section">
+            <div class="section-title">👩‍🍳 详细做法</div>
+            <div class="steps-container">
+              ${recipe.steps.map(step => `
+                <div class="step-item">
+                  <div class="step-dish">${step.dish}</div>
+                  <div class="step-method">${step.method}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+      menuDisplay.innerHTML = mealsHTML;
+    }
+
+    randomBtn.addEventListener('click', () => {
+      const idx = Math.floor(Math.random() * recipePool.length);
+      renderMenu(idx);
+    });
+
+    // 注册 Service Worker（可选，用于离线缓存）
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>

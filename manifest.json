@@ -1,0 +1,14 @@
+{
+  "name": "孕期双人菜谱",
+  "short_name": "孕期菜谱",
+  "description": "孕期两人份一日三餐随机菜谱，含采购清单与做法",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fbf7f0",
+  "theme_color": "#fbf7f0",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
